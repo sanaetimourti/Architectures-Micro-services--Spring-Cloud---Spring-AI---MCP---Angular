@@ -54,8 +54,15 @@ mvn -pl ai-agent-service spring-boot:run
 - Customer by ID : `GET http://localhost:8082/api/customers/1`
 - Create customer : `POST http://localhost:8082/api/customers` avec JSON `{"name":"Sara","email":"sara@example.com"}`
 - E-Bank via Feign + Circuit Breaker : `GET http://localhost:8083/api/banking/customers/1`
+- Comptes bancaires : `GET http://localhost:8083/api/accounts`, `GET http://localhost:8083/api/accounts/customer/1`, `POST http://localhost:8083/api/accounts?customerId=1&accountType=COURANT&initialBalance=250.00`
+- Swagger Customer : http://localhost:8082/swagger-ui/index.html
+- Swagger E-Bank : http://localhost:8083/swagger-ui/index.html
 - Gateway discovery route : `GET http://localhost:8880/customer-service/api/customers`
 - AI chat : `POST http://localhost:8090/api/ai/chat` avec JSON `{"message":"Bonjour"}`
+
+## MCP
+
+Le module IA expose les outils MCP `find_customer`, `list_customer_accounts` et `get_banking_customer`. Le transport MCP HTTP est fourni par le starter Spring AI MCP WebMVC. Les outils interrogent les API locales Customer et E-Bank.
 
 ## Sécurité
 
