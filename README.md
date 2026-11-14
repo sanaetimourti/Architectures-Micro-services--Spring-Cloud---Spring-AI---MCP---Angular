@@ -1,39 +1,66 @@
-# EBank Microservices Platform
+# EBank — Architecture Microservices, Spring Cloud, Spring AI et MCP
 
-Projet pédagogique basé sur Spring Boot, Spring Cloud, OpenFeign, Resilience4j, Eureka, API Gateway, Spring AI et MCP.
+Projet pédagogique de mise en œuvre d'une architecture microservices avec Spring Boot, Spring Cloud, OpenFeign, Resilience4j, Eureka, API Gateway, Spring AI, MCP et Angular.
 
-## Modules
+## Guide détaillé
 
-| Module | Port | Rôle |
+**[Lire le guide complet d'installation, de lancement, de tests et de captures d'écran](docs/guide-demarrage-et-tests.md)**
+
+Le guide contient les commandes Windows PowerShell, l'ordre de démarrage, les requêtes Postman/REST, les vérifications Eureka, les tests du chatbot et une liste de captures à réaliser.
+
+## Architecture générale
+
+```mermaid
+flowchart TB
+    UI[Angular :4200] --> GW[API Gateway :8880]
+    USER[Postman / Swagger] --> CS[Customer-Service :8082]
+    USER --> EB[E-Bank-Service :8083]
+    GW --> CS
+    GW --> EB
+    EB -->|OpenFeign| CS
+    EB -->|Circuit Breaker| CS
+    DS[Eureka Discovery :8761] -. découverte .-> CS
+    DS -. découverte .-> EB
+    DS -. découverte .-> GW
+    CFG[Config Server :8888] -. configuration .-> CS
+    CFG -. configuration .-> EB
+    AI[AI Agent + MCP :8090] -->|REST / Tools| CS
+    AI -->|REST / Tools| EB
+    UI -->|REST Chat| AI
+```
+
+## Modules et ports
+
+| Module | Port | Fonction |
 |---|---:|---|
 | discovery-service | 8761 | Registre Eureka |
 | config-server | 8888 | Configuration centralisée (profil native) |
-| customer-service (dossier `custumer-service`) | 8082 | API CRUD clients + H2 |
-| e-bank-service | 8083 | Service bancaire, OpenFeign et Circuit Breaker |
-| api-gateway | 8880 | Gateway avec découverte dynamique |
-| ai-agent-service | 8090 | API chatbot Spring AI et dépendance MCP WebMVC |
+| custumer-service | 8082 | CRUD clients et base H2 |
+| e-bank-service | 8083 | Comptes bancaires, OpenFeign et Circuit Breaker |
+| api-gateway | 8880 | Routage dynamique via Eureka |
+| ai-agent-service | 8090 | Chatbot Spring AI et serveur MCP |
+| frontend-angular | 4200 | Interface de discussion Angular |
 
 ## Prérequis
 
 - Java 21
 - Maven 3.9+
-- Une clé API OpenAI uniquement si le module IA est utilisé.
-
-Ne jamais enregistrer de clé API dans Git. Définir la variable d'environnement `OPENAI_API_KEY` dans le terminal avant de lancer le module IA.
+- Node.js LTS et npm
+- Une clé API OpenAI pour exécuter le chatbot
 
 ## Compilation
 
-Depuis la racine :
+Depuis la racine du dépôt :
 
-```bash
+```powershell
 mvn clean verify
 ```
 
-## Démarrage (terminaux séparés)
+## Démarrage rapide
 
-Lancer dans cet ordre :
+Ouvrir un terminal PowerShell par service et exécuter depuis la racine :
 
-```bash
+```powershell
 mvn -pl discovery-service spring-boot:run
 mvn -pl config-server spring-boot:run
 mvn -pl custumer-service spring-boot:run
@@ -41,41 +68,48 @@ mvn -pl e-bank-service spring-boot:run
 mvn -pl api-gateway spring-boot:run
 ```
 
-Pour le module IA, définir `OPENAI_API_KEY`, puis :
+Pour le chatbot, dans un autre terminal :
 
-```bash
+```powershell
+$env:OPENAI_API_KEY = "VOTRE_CLE_API"
 mvn -pl ai-agent-service spring-boot:run
 ```
 
-## Tests REST
+Pour Angular :
 
-- Eureka : http://localhost:8761
-- Customer : `GET http://localhost:8082/api/customers`
-- Customer by ID : `GET http://localhost:8082/api/customers/1`
-- Create customer : `POST http://localhost:8082/api/customers` avec JSON `{"name":"Sara","email":"sara@example.com"}`
-- E-Bank via Feign + Circuit Breaker : `GET http://localhost:8083/api/banking/customers/1`
-- Comptes bancaires : `GET http://localhost:8083/api/accounts`, `GET http://localhost:8083/api/accounts/customer/1`, `POST http://localhost:8083/api/accounts?customerId=1&accountType=COURANT&initialBalance=250.00`
-- Swagger Customer : http://localhost:8082/swagger-ui/index.html
-- Swagger E-Bank : http://localhost:8083/swagger-ui/index.html
-- Gateway discovery route : `GET http://localhost:8880/customer-service/api/customers`
-- AI chat : `POST http://localhost:8090/api/ai/chat` avec JSON `{"message":"Bonjour"}`
-
-## MCP
-
-Le module IA expose les outils MCP `find_customer`, `list_customer_accounts` et `get_banking_customer`. Le transport MCP HTTP est fourni par le starter Spring AI MCP WebMVC. Les outils interrogent les API locales Customer et E-Bank.
-
-## Sécurité
-
-Les clés, tokens Telegram/Discord et autres secrets doivent être fournis par variables d'environnement ou gestionnaire de secrets. Ne pas les committer.
-
-## Angular interface
-
-Dans un autre terminal :
-
-```bash
+```powershell
 cd frontend-angular
 npm install
 npm start
 ```
 
-Ouvrir http://localhost:4200. L'interface appelle le endpoint REST du module IA. Les notifications Telegram/Discord ne sont pas configurées dans le dépôt : elles nécessitent les identifiants de bots et des URL de webhook fournis par leur propriétaire.
+## Endpoints principaux
+
+- Eureka : http://localhost:8761
+- Customer : `GET http://localhost:8082/api/customers`
+- Customer par ID : `GET http://localhost:8082/api/customers/1`
+- E-Bank via OpenFeign + Circuit Breaker : `GET http://localhost:8083/api/banking/customers/1`
+- Comptes : `GET http://localhost:8083/api/accounts`
+- Gateway : `GET http://localhost:8880/customer-service/api/customers`
+- Chatbot : `POST http://localhost:8090/api/ai/chat` avec `{"message":"Bonjour"}`
+- Swagger Customer : http://localhost:8082/swagger-ui/index.html
+- Swagger E-Bank : http://localhost:8083/swagger-ui/index.html
+- Angular : http://localhost:4200
+
+## MCP et outils IA
+
+Le module IA utilise Spring AI et expose les outils de consultation client et de comptes via un fournisseur de callbacks. Le guide détaille les vérifications à effectuer avec un client MCP compatible. L'appel effectif doit être validé dans l'environnement local.
+
+## Captures d'écran
+
+Les captures de démonstration doivent être prises après lancement réel des services. Les noms et emplacements attendus sont listés dans [le guide](docs/guide-demarrage-et-tests.md), dossier `docs/screenshots/`. Aucune capture de fonctionnement n'est présentée comme preuve avant d'avoir été réalisée.
+
+## Sécurité
+
+- Ne jamais committer de clé API, token Telegram/Discord ou secret.
+- Utiliser des variables d'environnement ou un gestionnaire de secrets.
+- Masquer les secrets et informations privées sur les captures.
+
+## État actuel
+
+La structure des modules, les endpoints de base, la configuration Spring Cloud, l'interface Angular et les outils IA/MCP ont été ajoutés. Le build GitHub Actions a révélé une incompatibilité d'annotations MCP ; une correction a été commitée, mais la réussite du build doit encore être confirmée. Les intégrations Telegram et Discord ne sont pas encore implémentées.
