@@ -2,11 +2,6 @@
 
 Projet pédagogique de mise en œuvre d'une architecture microservices avec Spring Boot, Spring Cloud, OpenFeign, Resilience4j, Eureka, API Gateway, Spring AI, MCP et Angular.
 
-## Guide détaillé
-
-**[Lire le guide complet d'installation, de lancement, de tests et de captures d'écran](docs/guide-demarrage-et-tests.md)**
-
-Le guide contient les commandes Windows PowerShell, l'ordre de démarrage, les requêtes Postman/REST, les vérifications Eureka, les tests du chatbot et une liste de captures à réaliser.
 
 ## Architecture générale
 
@@ -102,19 +97,13 @@ npm start
 
 Le module IA utilise Spring AI et expose les outils de consultation client et de comptes via un fournisseur de callbacks. Le guide détaille les vérifications à effectuer avec un client MCP compatible. L'appel effectif doit être validé dans l'environnement local.
 
-## Captures d'écran
 
-Les captures de démonstration doivent être prises après lancement réel des services. Les noms et emplacements attendus sont listés dans [le guide](docs/guide-demarrage-et-tests.md), dossier `docs/screenshots/`. Aucune capture de fonctionnement n'est présentée comme preuve avant d'avoir été réalisée.
 
 ## Notifications Telegram et Discord
 
 Le module IA fournit deux endpoints REST d'envoi. Configurer `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` et/ou `DISCORD_WEBHOOK_URL` dans l'environnement avant de lancer le service. Les commandes de test sont dans le [guide détaillé](docs/guide-demarrage-et-tests.md).
 
-## Sécurité
 
-- Ne jamais committer de clé API, token Telegram/Discord ou secret.
-- Utiliser des variables d'environnement ou un gestionnaire de secrets.
-- Masquer les secrets et informations privées sur les captures.
 
 ## État actuel
 
