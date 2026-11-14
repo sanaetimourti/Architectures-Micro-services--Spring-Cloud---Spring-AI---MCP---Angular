@@ -60,3 +60,15 @@ mvn -pl ai-agent-service spring-boot:run
 ## Sécurité
 
 Les clés, tokens Telegram/Discord et autres secrets doivent être fournis par variables d'environnement ou gestionnaire de secrets. Ne pas les committer.
+
+## Angular interface
+
+Dans un autre terminal :
+
+```bash
+cd frontend-angular
+npm install
+npm start
+```
+
+Ouvrir http://localhost:4200. L'interface appelle le endpoint REST du module IA. Les notifications Telegram/Discord ne sont pas configurées dans le dépôt : elles nécessitent les identifiants de bots et des URL de webhook fournis par leur propriétaire.
