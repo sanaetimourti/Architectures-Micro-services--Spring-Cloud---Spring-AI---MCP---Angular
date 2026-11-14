@@ -202,9 +202,40 @@ Ouvrir http://localhost:4200. Envoyer un message dans l'interface. Le service IA
 
 **Capture 11 — Angular** : interface avec une conversation de test réelle, sous `docs/screenshots/11-angular-chat.png`.
 
-## 11. Telegram et Discord
+## 11. Tester Telegram et Discord
 
-Les intégrations Telegram et Discord ne sont pas encore configurées dans ce dépôt. Elles nécessitent des comptes/bots, des tokens et des webhooks ou endpoints d'interaction. Les secrets doivent rester dans des variables d'environnement et ne doivent jamais être ajoutés au dépôt. Ne pas joindre de capture de ces intégrations avant qu'elles soient réellement développées et testées.
+Les endpoints d'envoi sont disponibles dans ai-agent-service. Il faut fournir les secrets dans le terminal qui démarre ce service.
+
+Telegram :
+- Créer un bot via BotFather et récupérer son token.
+- Récupérer le chat ID autorisé à recevoir les messages.
+- Définir les variables d'environnement :
+
+```powershell
+$env:TELEGRAM_BOT_TOKEN = "TOKEN_DU_BOT"
+$env:TELEGRAM_CHAT_ID = "CHAT_ID"
+```
+
+Discord :
+- Créer un webhook dans un canal de test et copier son URL.
+- Définir :
+
+```powershell
+$env:DISCORD_WEBHOOK_URL = "URL_DU_WEBHOOK"
+```
+
+Redémarrer ai-agent-service après avoir défini ces variables, puis tester :
+
+```powershell
+$body = @{ message = "Test de notification depuis EBank" } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri http://localhost:8090/api/notifications/telegram -ContentType "application/json" -Body $body
+Invoke-RestMethod -Method Post -Uri http://localhost:8090/api/notifications/discord -ContentType "application/json" -Body $body
+```
+
+Les tokens et URL de webhook sont des secrets : ne pas les afficher dans les captures et ne jamais les committer.
+
+**Capture 12 — Telegram** : message de test reçu, sous `docs/screenshots/12-telegram.png`.
+**Capture 13 — Discord** : message de test reçu, sous `docs/screenshots/13-discord.png`.
 
 ## 12. Historique Git
 
@@ -217,7 +248,7 @@ git log --oneline --decorate -15
 git status
 ```
 
-**Capture 12 — Historique Git** : terminal montrant les commits successifs, sous `docs/screenshots/12-git-history.png`.
+**Capture 12 — Historique Git** : terminal montrant les commits successifs, sous `docs/screenshots/14-git-history.png`.
 
 ## 13. Dossier des captures
 
@@ -234,5 +265,5 @@ Enregistrer les captures indiquées dans les étapes précédentes avec les noms
 - La structure multi-modules, les contrôleurs principaux, la configuration de découverte, la Gateway, les outils IA/MCP et le client Angular sont présents dans le dépôt.
 - Les tests doivent être exécutés localement avec les prérequis et les services démarrés.
 - La compilation GitHub Actions a signalé une erreur d'import d'annotations MCP ; une correction a été poussée et doit être confirmée par une nouvelle exécution réussie.
-- Telegram et Discord restent à développer/configurer.
+- Les endpoints de notification Telegram et Discord sont ajoutés ; leurs tests réels nécessitent les tokens et webhooks personnels.
 - Les captures listées sont des preuves à produire depuis une exécution réelle ; ce guide ne prétend pas qu'elles ont déjà été prises.
