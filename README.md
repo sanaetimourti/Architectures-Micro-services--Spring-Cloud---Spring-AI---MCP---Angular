@@ -95,6 +95,8 @@ npm start
 - Swagger Customer : http://localhost:8082/swagger-ui/index.html
 - Swagger E-Bank : http://localhost:8083/swagger-ui/index.html
 - Angular : http://localhost:4200
+- Notification Telegram : `POST http://localhost:8090/api/notifications/telegram`
+- Notification Discord : `POST http://localhost:8090/api/notifications/discord`
 
 ## MCP et outils IA
 
@@ -104,6 +106,10 @@ Le module IA utilise Spring AI et expose les outils de consultation client et de
 
 Les captures de démonstration doivent être prises après lancement réel des services. Les noms et emplacements attendus sont listés dans [le guide](docs/guide-demarrage-et-tests.md), dossier `docs/screenshots/`. Aucune capture de fonctionnement n'est présentée comme preuve avant d'avoir été réalisée.
 
+## Notifications Telegram et Discord
+
+Le module IA fournit deux endpoints REST d'envoi. Configurer `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` et/ou `DISCORD_WEBHOOK_URL` dans l'environnement avant de lancer le service. Les commandes de test sont dans le [guide détaillé](docs/guide-demarrage-et-tests.md).
+
 ## Sécurité
 
 - Ne jamais committer de clé API, token Telegram/Discord ou secret.
@@ -112,4 +118,4 @@ Les captures de démonstration doivent être prises après lancement réel des s
 
 ## État actuel
 
-La structure des modules, les endpoints de base, la configuration Spring Cloud, l'interface Angular et les outils IA/MCP ont été ajoutés. Le build GitHub Actions a révélé une incompatibilité d'annotations MCP ; une correction a été commitée, mais la réussite du build doit encore être confirmée. Les intégrations Telegram et Discord ne sont pas encore implémentées.
+La structure des modules, les endpoints de base, la configuration Spring Cloud, l'interface Angular, les outils IA/MCP et les endpoints de notification Telegram/Discord sont présents. Une exécution GitHub Actions Maven a confirmé `BUILD SUCCESS` pour les modules backend au commit `8ac2e8e`. Les dernières modifications de notification doivent également passer le workflow. Les tests fonctionnels nécessitent un environnement local et des secrets configurés.
