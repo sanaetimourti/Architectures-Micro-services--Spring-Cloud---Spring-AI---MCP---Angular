@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/ai")
 public class ChatController {
     private final ChatClient chatClient;
